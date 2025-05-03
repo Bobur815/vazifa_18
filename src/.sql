@@ -6,7 +6,8 @@ CREATE TABLE students (
     id int auto_increment primary key,
     name varchar(30) not null,
     age int check (age>14 and age< 120) not null,
-    email varchar(40) unique not null
+    email varchar(40) unique not null,
+    img_url varchar(100)
 );
 
 INSERT INTO students (name, age, email) VALUES 

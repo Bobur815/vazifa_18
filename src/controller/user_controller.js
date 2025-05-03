@@ -168,23 +168,25 @@ const PUT = async (req,res) => {
 
 const PROFILE_IMG = async (req,res) => {
     try {
-        let {img} = req.files;
+        let {id} = req.body;
+        let img = req.files.img;
+        
         let fileName = new Date().getTime() + "." + img.name;
         
-        img.mv(path.join(process.cwd(), 'src', 'uploads', fileName), (error) => {
-            if (error) {
-                return res.status(400).json({
-                    status: 400,
-                    success: false,
-                    message: error.message
-                });
-            }
+        await new Promise((res,rej) => {
+            img.mv(path.join(process.cwd(), 'src', 'uploads', fileName), (error) => {
+                if (error) {
+                    return rej(error)
+                }
+                res();
+            })
+        });
+        await db.query('update students set img_url = ? where id = ? ', [fileName,id]);
 
-            return res.status(201).json({
-                status: 201,
-                success: true,
-                message: "Image uploaded successfully"
-            });
+        res.status(201).json({
+            status: 201,
+            success: true,
+            message: "Image uploaded successfully"
         });
     } catch (error) {
         res.status(400).json({
